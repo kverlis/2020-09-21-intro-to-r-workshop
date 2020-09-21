@@ -188,7 +188,7 @@ log10(100)
 #
 # Topic: Vectors and Data Types
 # Presented by: Richard Miller
-
+a <- 3
 # Combine some values in a vector
 glengths <- c(4.6, 3000, 50000)
 glengths
@@ -249,11 +249,11 @@ class(decimal_number)
 #
 # What will happen in each of these examples?
 #
-#   num_char <- c(1, 2, 3, "a")
-#   num_logical <- c(1, 2, 3, TRUE)
-#   char_logical <- c("a", "b", "c", TRUE)
-#   tricky <- c(1, 2, 3, "4")
-#
+  num_char <- c(1, 2, 3, "a")
+  num_logical <- c(1, 2, 3, TRUE)
+  char_logical <- c("a", "b", "c", TRUE)
+  tricky <- c(1, 2, 3, "4")
+
 # [Hint: use class() to check the data type of your objects]
 #
 # Can you explain why you think it happens?
@@ -306,6 +306,7 @@ animals[animals %in% c("rat", "cat", "dog", "duck", "goat")]
 # returns TRUE?
 #
 # Answer:
+#because "four" and "five" are compared alphabetically, as they are characters not numeric
 
 
 # Topic: Missing data (NA - Not Available)
@@ -316,11 +317,14 @@ max(heights)
 mean(heights, na.rm = TRUE)
 max(heights, na.rm = TRUE)
 
+#Alternative ways of writing the above 
+is.na(heights)
 heights[!is.na(heights)]
-na.omit(heights)
+na.omit(heights)                   #shorthand, to use OMIT instead
 heights[complete.cases(heights)]
+# heights <- heights[complete.cases(heights)] TO REMOVE NA from your data set
+#!is.na(heights) this will invert whatever you have, so TRUE now FALSE and vice versa
 
-#
 # Exercise (extended)
 #
 #

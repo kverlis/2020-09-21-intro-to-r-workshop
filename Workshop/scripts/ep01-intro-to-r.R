@@ -25,10 +25,11 @@
 # What does: 11 + 1 / 6  evaluate to ?
 
 # Solution:
-
+11 + (1/6)
 
 # Calculate 10 plus 2 all divided by 3 and then squared
-
+10 + (2 /3)^2 
+((10+2)/3)^2
 # Solution:
 
 
@@ -48,9 +49,11 @@ a + b               # we can add them together just like numbers
 # --------
 #
 # What happens if we change a and then re-add a and b? [Hint: Try it now]
-#
+a <- 7
+a  + b
 # Does it work if you just change a in the script and then add a and b? [Hint: Try it]
-#
+a <- 8
+a + b
 # Did you still get the same answer after you changed a? 
 # If so, why do you think that might be?
 #
@@ -58,14 +61,14 @@ a + b               # we can add them together just like numbers
 # How would you do this?
 #
 # Solution:
-
+c <- a + b
 
 
 # Logical operators
 #
 # == != < > >= <= !
 1 < 124
-
+1 > 124
 #
 # Sensible object names are sensible ...
 #
@@ -85,22 +88,22 @@ ekljre2jklwef023ijlefj93jkl23rj90f32k <- 1
 # Assign the name of this workshop to a object with a good name.
 #
 # Solution: [Hint:       <- "Introduction to R"]
-
+Name_of_workshop <- "Introduction to R"
 # Assign the name of video conferencing tool we are using to an object
 #
 # Solution: [Hint:      <- "Zoom"]
-
+video_tool <- "Zoom"
 
 # Which of these are valid object names: [Hint: Try them out]
 #
-#  min_height
-#  max.height
-#  _age
-#  .mass
-#  MaxLength
-#  min-length
-#  2widths
-#  celsius2kelvin
+min_height <- 2
+max.height <- 3
+ _age
+.mass <- 9
+MaxLength <- 8
+min-length <-11
+2widths<- 1
+celsius2kelvin <- 2
 
 #
 # Topic: Displaying results
@@ -125,11 +128,11 @@ weight_kg
 # 
 # What are the values after each statement in the following?
 # 
-# mass <- 47.5            # mass is: 
-# age  <- 122             # age is:
-# mass <- mass * 2.0      # mass is:
-# age  <- age - 20        # age is:
-# mass_index <- mass/age  # mass_index is: 
+# mass <- 47.5            # mass is: 47.5
+# age  <- 122             # age is: 122
+# mass <- mass * 2.0      # mass is: 95
+# age  <- age - 20        # age is:102
+# mass_index <- mass/age  # mass_index is: 0.9313725490
 #
 # How do we do we know if our answers are correct ? 
 # [Hint: <highlight> [ALT][ENTER]
@@ -150,14 +153,15 @@ weight_kg
 #
 # Add explanatory comments to the following lines of code
 
-ft <- 3
-in <- ft * 12
-cms <- in * 2.54
-m = cms / 100
+ft <- 3                   # length in feet
+in <- ft * 12             # conversion of feet to inches
+cms <- in * 2.54          # conversion factor 2.54 from centimetres into inches
+m = cms / 100             # convert from centimetres to metres
 
 #
 # Topic: Functions and Arguments
 #
+a <- 16
 sqrt(2)
 sqrt(a)
 abs(-23.3)
@@ -170,16 +174,17 @@ args(round)
 
 round(3.14159, digits = 2)
 round(digits = 2, x = 3.14159)
-
+round (3.14159, 2)
 #
 # Exercise
 #
 # what does the function called log10() do ?  Can you test it ?
-#
+
 # Answer:
-
-
-
+log1o("cat")
+log10(10)
+log10(100)
+?log10
 #
 # Topic: Vectors and Data Types
 # Presented by: Richard Miller

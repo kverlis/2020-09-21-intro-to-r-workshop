@@ -199,31 +199,76 @@ as.character(year)  # gives string, but not readily able to use, therefore...
 as.numeric( as.character(year)) # turn into characters, and then back into numbers
 
 # so does our survey data have any factors
-
-
+str(surveys)  # ask by asking for the structure of the data frame
+              # output says genus, species, taxa, pot_type, sex are factors
 #
 # Topic:  Dealing with Dates
-#
+# in the provided data set, it gives month, day and year as seperate columns as Dates data
 
 # R has a whole library for dealing with dates ...
+library(lubridate)
 
+my_date <- ymd("2015-01-01")
+class(my_date)   # class lets us check what this is 
 
+# date: 7-16-1977 need to format to look this so that lubridate can then read the data like this
 
 # R can concatenated things together using paste()
+# need to paste together three columns from our data set
 
+paste("abc", "123")    # when run, provides a space to see that two things joined together
+paste ("abc", "123", sep = "+")  # has placed plus symbol where the space was when run
 
 # 'sep' indicates the character to use to separate each component
 
+paste ("abc", "123", sep = "-")
+paste ("2015", "01", "26", sep = "-")   # write date backwards, year, month, day
+
+ymd (paste ("2015", "01", "26", sep = "-"))
+
+my_date <- ymd (paste ("2015", "01", "26", sep = "-"))
+class(my_date)
 
 # paste() also works for entire columns
+surveys["month"] # or ...
+surveys$year    #gives me all years, and can be done for all months, days, etc
 
+paste(surveys$year, surveys$month, surveys$day) # Join ALL year, month and day together
+
+paste (surveys$year, surveys$month, surveys$day, sep = "-")
+
+ymd(paste (surveys$year, 
+           surveys$month, 
+           surveys$day, sep = "-"))
+
+surveys$date <- ymd(paste (surveys$year, 
+                           surveys$month, 
+                           surveys$day, sep = "-"))  
 
 # let's save the dates in a new column of our dataframe surveys$date 
 
+surveys$date <- ymd(paste (surveys$year, 
+                           surveys$month, 
+                           surveys$day, sep = "-"))  
+# this created a new column in data frame
 
 # and ask summary() to summarise 
+summary(surveys)
 
+# NOTE: now dates are ID'd as they are a new columnthe summary gives summary date info as well
 
 # but what about the "Warning: 129 failed to parse"
+# indicates some data could not be converted to a date, something wrong with original data
 
+summary(surveys$date)
+# the date function shows that there were 129 NAs.
+# To figure out where those 129 items are located in those rows?
+# some date cannot be converted to date because some months do not have 31 days
 
+is.na(surveys$date)  # this is tedious to scan all of this
+missing_date <- is.na(surveys$date)
+missing_date <- surveys [ is.na(surveys$date), "date"]
+missing_date
+
+missing_date <- surveys [ is.na(surveys$date), c("year", "month", "day")]
+summary(missing_date)

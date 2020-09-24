@@ -231,48 +231,94 @@ surveys %>%
   select(year, genus, species, weight) %>%
   arrange(year)
 
+heaviest_year <- surveys %>% 
+  filter(!is.na(weight)) %>% 
+  group_by(year) %>% 
+  select(year,genus,species,weight) %>% 
+  arrange(year) %>% 
+  distinct()
+
+
 
 #-----------
 # Reshaping
 #-----------
 
+surveys_gw <- surveys %>% 
+  filter(!is.na(weight)) %>% 
+  group_by(plot_id, genus) %>% 
+  summarise(mean_weight = mean(weight))
+
+surveys_wider <- surveys_gw %>% 
+  pivot_wider()
+
+surveys_wider <- surveys_gw %>% 
+  spread(key = genus, value = mean_weight)
+
+str(surveys_wider)
+
+surveys_gather <- surveys_wider %>% 
+  gather(key = genus, value = mean_weight, -plot_id)
 
 
-
-
-
+surveys_gather2 <- surveys_wider %>% 
+  gather(key = genus, value = mean_weight, Baiomys:Spermophilus)# %>% 
+  #head()
 
 #-----------
 # CHALLENGE
 #-----------
 
-# 1. Spread the surveys data frame with year as columns, plot_id as rows, 
-#    and the number of genera per plot as the values. You will need to summarize before reshaping, 
-#    and use the function n_distinct() to get the number of unique genera within a particular chunk of data. 
+# 1. Spread the surveys data frame with year as columns, plot_id as rows,
+#    and the number of genera per plot as the values. You will need to summarize before reshaping,
+#    and use the function n_distinct() to get the number of unique genera within a particular chunk of data.
 #    It’s a powerful function! See ?n_distinct for more.
 
-# 2. Now take that data frame and pivot_longer() it again, so each row is a unique plot_id by year combination.
+surveys_spread_genera <- surveys %>% 
+  group_by(plot_id, year) %>% 
+  summarise(n_genera = n_distinct(genus)) %>% 
+  spread(year, n_genera)
 
-# 3. The surveys data set has two measurement columns: hindfoot_length and weight. 
-#    This makes it difficult to do things like look at the relationship between mean values of each 
-#    measurement per year in different plot types. Let’s walk through a common solution for this type of problem. 
-#    First, use pivot_longer() to create a dataset where we have a key column called measurement and a value column that 
-#    takes on the value of either hindfoot_length or weight. 
+head(surveys_spread_genera)
+
+# 2. Now take that data frame and gather() it again, so each row is a unique plot_id by year combination.
+
+surveys_spread_genera2 <- surveys_spread_genera %>% 
+  gather(key = year, value = n_genera, -plot_id)
+
+
+head(surveys_spread_genera2)
+
+# 3. The surveys data set has two measurement columns: hindfoot_length and weight.
+#    This makes it difficult to do things like look at the relationship between mean values of each
+#    measurement per year in different plot types. Let’s walk through a common solution for this type of problem.
+#    First, use gather() to create a dataset where we have a key column called measurement and a value column that
+#    takes on the value of either hindfoot_length or weight.
 #    Hint: You’ll need to specify which columns are being pivoted.
 
-# 4. With this new data set, calculate the average of each measurement in each year for each different plot_type. 
-#    Then pivot_wider() them into a data set with a column for hindfoot_length and weight. 
-#    Hint: You only need to specify the key and value columns for pivot_wider().
+surveys_long <- surveys %>% 
+  gather ("measurement", "value", hindfoot_length, weight)
+
+head(surveys_long)
+
+# 4. With this new data set, calculate the average of each measurement in each year for each different plot_type.
+#    Then spread() them into a data set with a column for hindfoot_length and weight.
+#    Hint: You only need to specify the key and value columns for spread().
 
 
+surveys_long2 <- surveys_long %>% 
+  group_by(year, measurement, plot_type) %>% 
+  summarise(mean_value = mean(measurement, na.rm = TRUE)) %>% 
+  spread(measurement, mean_value)
 
+tail(surveys_long2)
 
 
 #----------------
 # Exporting data
 #----------------
 
-
+write_csv(surveys_long2, path = "data_out/surveys_long2.csv")
 
 
 

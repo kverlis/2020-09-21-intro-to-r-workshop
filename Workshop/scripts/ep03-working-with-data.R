@@ -32,29 +32,60 @@ download.file(url = "https://ndownloader.figshare.com/files/2292169",
 # Lets get started!
 #------------------
 
+install.packages("tidyverse")
+library(tidyverse)
+#dplyr and tidyr will be discussed today
 
+# Load the dataset
+surveys <- read_csv("data_raw/portal_data_joined.csv")
 
+# check the structure - taking note of the classes in output in Consule screen
+str(surveys)
 
 
 
 #-----------------------------------
 # Selecting columns & filtering rows
 #-----------------------------------
+select(surveys, plot_id, species_id, weight)
 
+# Alt way to leave things out of data frame you are shown in Console output
+select(surveys, -record_id, -species_id)
 
+# Filter for a particular year
+filter(surveys, year == 1995)
 
+# To save filters for later (run and then it will show up in your environment window to right)
+surveys_1995 <- filter(surveys, year == 1995)
 
+surveys2 <- filter(surveys, weight < 5)
+surveys_sml <- select(surveys2, species_id, sex, weight)
 
+# combine together to reduce confusion (will give you same outcome as the above)
+surveys_sml <- select(filter(surveys, weight <5), species_id, sex, weight)
 
 
 #-------
 # Pipes
 #-------
+# The pipe --> %>%
+# Shortcut --> Ctrl + shift + m
 
+surveys %>% 
+  filter(weight <5) %>% 
+  select(species_id, sex, weight)
 
+# Assign the above to surveys_sml
+surveys_sml <- surveys %>% 
+  filter(weight <5) %>% 
+  select(species_id, sex, weight)
 
-
-
+# If you put select first - Errors and performance inpact. As ...
+# Will provide same output, but may end up removing or filtering twice - therefore, avoid doing this way
+# If you removed weight from line 86, if you filter from weight on line 87, it can no longer find as no longer exists!
+surveys_sml2 <- surveys %>% 
+  select(species_id, sex, weight) %>% 
+  filter(weight < 5)
 
 #-----------
 # CHALLENGE
@@ -63,18 +94,33 @@ download.file(url = "https://ndownloader.figshare.com/files/2292169",
 # Using pipes, subset the ```surveys``` data to include animals collected before 1995 and 
 # retain only the columns ```year```, ```sex```, and ```weight```.
 
-
+# ordering of your columns DOES matter!
+surveys_1995 <- surveys %>% 
+  filter(year < 1995) %>%   
+  select(year, sex, weight)
 
 
 
 #--------
 # Mutate
 #--------
+# add new columns weight_kg and weight_lb
+surveys_weights <- surveys %>% 
+  mutate(weight_kg = weight / 1000,
+         weight_lb = weight_kg * 2.2) %>% 
+  
+  surveys %>% 
+  mutate(weight_kg = weight / 1000,
+         weight_lb = weight_kg * 2.2) %>% 
+  head()
 
+# Remove na's in weight column then add new col weight_kg
+surveys %>% 
+  filter(!is.na(weight)) %>% 
+  mutate(weight_kg = weight/1000) %>% 
+  head()
 
-
-
-
+filter(length != "")
 
 #-----------
 # CHALLENGE
@@ -87,8 +133,17 @@ download.file(url = "https://ndownloader.figshare.com/files/2292169",
 
 # Hint: think about how the commands should be ordered to produce this data frame!
 
+surveys %>% 
+  filter(!is.na(hindfoot_length)) %>% 
+  mutate(hindfoot_cm = hindfoot_length / 10) %>% 
+  filter(hindfoot_cm < 3) %>% 
+  select(species_id, hindfoot_cm)
 
-
+surveys_hindfoot <- surveys %>% 
+  filter(!is.na(hindfoot_length)) %>% 
+  mutate(hindfoot_cm = hindfoot_length / 10) %>% 
+  filter(hindfoot_cm < 3) %>% 
+  select(species_id, hindfoot_cm)
 
 
 #---------------------

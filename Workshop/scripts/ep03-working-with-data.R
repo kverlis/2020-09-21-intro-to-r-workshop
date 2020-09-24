@@ -150,9 +150,44 @@ surveys_hindfoot <- surveys %>%
 # Split-apply-combine
 #---------------------
 
+# Summarise weight
 
+# Group weight by sex after removing NAs in weight column 
+surveys %>% 
+  group_by(sex) %>% 
+  summarise(mean_weight = mean(weight, na.rm = TRUE))
 
+summary(surveys)
+?summarize # find out information on summarize
 
+surveys$sex <- as.factor(surveys$sex)
+
+# Summarise weights by sex and species_id afte removing 
+# nas from sex and weight.
+surveys %>% 
+  filter(!is.na(weight), !is.na(sex)) %>% 
+  group_by(sex, species_id) %>% 
+  summarise(mean_weight = mean(weight)) %>% 
+  print(n=20) # print 20 rows to console
+
+# Group the weights by sex and species_id
+# Order the table by min_weight and in descending order
+surveys %>% 
+  filter(!is.na(weight), !is.na(sex)) %>% 
+  group_by(sex, species_id) %>% 
+  summarise(mean_weight = mean(weight),
+            min_weight = min(weight)) %>% 
+  arrange(desc(min_weight))
+
+# Obtain the counts of each sex
+surveys %>% 
+  group_by(sex) %>% 
+  summarise(count = n())
+
+surveys_new <- surveys %>% 
+  group_by(sex, species, taxa) %>% 
+  summarise(count = n()) %>% 
+  ungroup
 
 
 #-----------
@@ -161,15 +196,40 @@ surveys_hindfoot <- surveys %>%
 
 # 1. How many animals were caught in each ```plot_type``` surveyed?
 
+surveys %>% count(plot_type)
+
+num_animals <- surveys %>% 
+  group_by(plot_type) %>% 
+  summarise(number_of_animals = n())
+
 # 2. Use ```group_by()``` and ```summarize()``` to find the mean, min, and max hindfoot length 
 #    for each species (using ```species_id```). Also add the number of observations 
 #    (hint: see ```?n```).
 
+hindfoot_info <- surveys %>%
+  filter(!is.na(hindfoot_length)) %>% 
+  group_by(species_id) %>% 
+  summarise(mean_length = mean(hindfoot_length),
+            min_length = min(hindfoot_length), 
+            max_length = max(hindfoot_length),
+            count = n())
+
+
 # 3. What was the heaviest animal measured in each year? 
 #    Return the columns ```year```, ```genus```, ```species_id```, and ```weight```.
 
+heaviest_year <- surveys %>% 
+  group_by(year) %>% 
+  mutate(max_weight = max(weight,na.rm = TRUE)) %>% 
+  ungroup()
 
 
+surveys %>%
+  filter(!is.na(weight)) %>%
+  group_by(year) %>%
+  filter(weight == max(weight)) %>%
+  select(year, genus, species, weight) %>%
+  arrange(year)
 
 
 #-----------

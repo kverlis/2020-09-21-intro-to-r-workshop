@@ -159,23 +159,97 @@ ggplot(data = surveys_complete, mapping = aes(x = species_id, y = weight)) +
 # First step, do some groupings
 
 yearly_counts <- surveys_complete %>% 
-  count(year, genus)
+  count(year, genus)  # default is n, if you wanted to name it count(year, genus, name = "some_name") # Note the quotes
 
-yearly_counts  # look at output, see there is a "n" variable now (in console output)
+
+yearly_counts  # look at output, see there is a "n" variable now for this count (as seen in console output)
 
 ggplot(data = yearly_counts, mapping = aes(x = year, y = n))+
   geom_line()                 # does not give individual outputs for each genus, just one single line
 
-# 
+
 ggplot(data = yearly_counts, mapping = aes(x = year, y = n, group = genus))+
   geom_line()                 # this will give individual line for each genus, although still no legend 
+
 
 # Challenge 8
 # Modify the code for the yearly counts to colour by genus so we can clearly see the counts by genus. 
 
+ggplot(data = yearly_counts, mapping = aes(x = year, y = n, colour = genus))+
+  geom_line()          # Don't need to define group, just colour
+
+# OR
+ggplot(data = yearly_counts, mapping = aes(x = year, y = n, group = genus))+
+  geom_line(aes(colour = as.factor(genus)))
+
+
+# Integrating the pipe operator with ggplot
+
+yearly_counts %>%
+  ggplot(mapping = aes(x = year, y = n, colour = genus))+ 
+           geom_line()
+
+# OR
+
+yearly_counts_graph <- surveys_complete %>%
+  count(year, genus) %>% 
+  ggplot(mapping = aes(x = year, y = n, color = genus)) +
+  geom_line()
+
+
+
+# Faceting
+
+ggplot(data=yearly_counts, mapping = aes (x = year, y = n,)) +
+  geom_line()+
+  facet_wrap(facets = vars(genus))   # Provides multiple graphs for each genus, in this instance
+
+
+# To add in sex to this, yearly doesn't currently contain this, so need more data
+
+yearly_sex_counts <- surveys_complete %>%
+  count(year, genus, sex)
+
+yearly_sex_counts %>%
+  ggplot(mapping = aes( x = year, y = n, colour = sex)) +
+  geom_line()+
+  facet_wrap( facets = vars(genus))
+
+# Multiple Facets
+
+yearly_sex_counts%>%
+  ggplot(mapping = aes( x = year, y = n, colour = sex)) +
+  geom_line()+
+  facet_grid(rows = vars (sex), cols = vars(genus))
+
+
+yearly_sex_counts%>%
+  ggplot(mapping = aes( x = year, y = n, colour = sex)) +
+  geom_line()+
+  facet_grid(rows = vars(genus))
+
 
 # Challenge 9
 # How would you modify this code so the faceting is organised into only columns instead of only rows?
+
+yearly_sex_counts%>%
+  ggplot(mapping = aes( x = year, y = n, colour = sex)) +
+  geom_line()+
+  facet_grid(cols = vars(genus))
+
+# Themes
+# some are pre loaded
+
+ggplot(data = yearly_sex_counts, mapping = aes(x=year, y = n, colour = sex))+
+         geom_line()+
+         facet_wrap(~genus)+
+         theme_bw()
+
+
+# Other examples
+theme_classic()
+theme_void ()
+
 
 
 # Challenge 10
@@ -183,5 +257,68 @@ ggplot(data = yearly_counts, mapping = aes(x = year, y = n, group = genus))+
 
 # Hint: need to do a group_by() and summarize() to get the data before plotting
 
+yearly_weight <- surveys_complete %>%
+  group_by(year, species_id) %>%
+  summarise(mean_weight = mean(weight))  # alternative mean_weight = mean(weight, na.rm = TRUE)), to remove NAs, if present
+
+yearly_weight %>%
+  ggplot(mapping = aes(x = year, y = mean_weight, colour = species_id))+
+  geom_line()+
+  theme_bw()
+ 
+# To get individual graphs/plots for each species id
+yearly_weight %>%
+  ggplot(mapping = aes(x = year, y = mean_weight, colour = species_id))+
+  geom_line()+
+  facet_wrap(~species_id)+
+  theme_bw()
+
+# To remove colour and thus legend, as not needed for individual plots
+yearly_weight %>%
+  ggplot(mapping = aes(x = year, y = mean_weight))+
+  geom_line()+
+  facet_wrap(~species_id)+
+  theme_bw()
+
+# Customisation of graphs/plots
+
+yearly_sex_counts %>%
+  ggplot(mapping = aes(x = year, y = n, colour = sex))+
+  geom_line()+
+  facet_wrap(~genus)+
+  labs(title = "Observed genera through time",  # Name of title
+       x = "Year of observation",               # name of x-axis
+       y = "Number of individuals")+            # name of y-axis
+  theme_bw()+
+  theme(text = element_text(size = 16),         # Increase text size, overall for all (different to do for each component individually)
+        axis.text.x = element_text(colour = "grey20", 
+                                   size = 12, angle = 90, 
+                                   hjust = 0.5,
+                                   vjust = 0.5),
+        axis.text.y = element_text(colour = "grey20",
+                                   size = 12),
+        strip.text = element_text(face = "italic"))
 
 
+# Creation of your own theme, by storing all these options into an object called "grey theme"
+grey_theme <- theme(text = element_text(size = 16),          
+      axis.text.x = element_text(colour = "grey20", 
+                                 size = 12, angle = 90, 
+                                 hjust = 0.5,
+                                 vjust = 0.5),
+      axis.text.y = element_text(colour = "grey20",
+                                 size = 12),
+      strip.text = element_text(face = "italic"))
+
+yearly_sex_counts %>%
+  ggplot(mapping = aes (x = year, y = n, colour = sex)) +
+  geom_line()+
+  facet_wrap(~genus)+
+  theme_bw()+
+  grey_theme
+
+
+# Exporting Plots
+
+ggsave("figures/my_plot.png", width = 15, height = 10) # default if unspecified in bracket, will be last plot you created
+                                                       # can enter the level of resolution here

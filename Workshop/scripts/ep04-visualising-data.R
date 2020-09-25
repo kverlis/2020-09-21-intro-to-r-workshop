@@ -322,3 +322,16 @@ yearly_sex_counts %>%
 
 ggsave("figures/my_plot.png", width = 15, height = 10) # default if unspecified in bracket, will be last plot you created
                                                        # can enter the level of resolution here
+
+# can create these in different files, for example in pdf
+
+ggsave("figures/my_plot.pdf", width = 15, height = 10)
+
+
+?ggsave  # Remember, to use this ? if you want to look for this in help
+
+# Help from top bar - gives you cheetsheets in drop down menu
+
+#rstats in Twitter to find help
+# MQ uni has a R User group - they hold workshops once a month on more advanced methods. Vids available w/ links. Can be put on mailing list
+# Slack channel for help and they run a help session once a month as well
